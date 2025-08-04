@@ -1,0 +1,137 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to validate contact form data
+    function isValidContact() {
+      return request.resource.data.keys().hasAll(['name', 'email', 'phone', 'message', 'submittedAt']) &&
+             request.resource.data.name is string &&
+             request.resource.data.name.size() > 0 &&
+             request.resource.data.email is string &&
+             request.resource.data.email.matches('[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}') &&
+             request.resource.data.phone is string &&
+             request.resource.data.phone.size() > 0 &&
+             request.resource.data.message is string &&
+             request.resource.data.message.size() > 0 &&
+             request.resource.data.submittedAt is timestamp;
+    }
+    
+    // Helper function to validate career application data
+    function isValidCareer() {
+      return request.resource.data.keys().hasAll(['name', 'email', 'phone', 'position', 'submittedAt']) &&
+             request.resource.data.name is string &&
+             request.resource.data.name.size() > 0 &&
+             request.resource.data.email is string &&
+             request.resource.data.email.matches('[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}') &&
+             request.resource.data.phone is string &&
+             request.resource.data.phone.size() > 0 &&
+             request.resource.data.position is string &&
+             request.resource.data.position.size() > 0 &&
+             request.resource.data.submittedAt is timestamp;
+    }
+    
+    // Users collection - only authenticated users can read their own data
+    // Admins can read all user data
+    match /users/{userId} {
+      allow read: if (isAuthenticated() && request.auth.uid == userId) || isAdmin();
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+      allow create: if isAuthenticated() && request.auth.uid == userId &&
+                      request.resource.data.keys().hasAll(['email', 'role', 'createdAt']) &&
+                      request.resource.data.email == request.auth.token.email;
+    }
+    
+    // Contact form submissions
+    match /contacts/{document} {
+      // Anyone can submit contact forms with validation
+      allow create: if isValidContact() &&
+                      request.resource.data.submittedAt == request.time;
+      
+      // Only admins can read contact submissions
+      allow read: if isAdmin();
+      
+      // Only admins can update/delete (for marking as read, etc.)
+      allow update, delete: if isAdmin();
+    }
+    
+    // Career applications
+    match /careers/{document} {
+      // Anyone can submit career applications with validation
+      allow create: if isValidCareer() &&
+                      request.resource.data.submittedAt == request.time;
+      
+      // Only admins can read career applications
+      allow read: if isAdmin();
+      
+      // Only admins can update/delete (for marking as reviewed, etc.)
+      allow update, delete: if isAdmin();
+    }
+    
+    // Homepage content - anyone can read, only admins can modify
+    match /homepage/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Site settings - only admins can access
+    match /settings/{document} {
+      allow read, write: if isAdmin();
+    }
+    
+    // Company information - anyone can read, only admins can modify
+    match /company/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Services - anyone can read, only admins can modify
+    match /services/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Testimonials - anyone can read, only admins can modify
+    match /testimonials/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Blog posts (if you add a blog later)
+    match /blog/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // File metadata (for uploaded files like resumes)
+    match /files/{document} {
+      allow read: if isAdmin();
+      allow create: if true; // Anyone can upload files for applications
+      allow update, delete: if isAdmin();
+    }
+    
+    // Admin logs (for tracking admin actions)
+    match /admin_logs/{document} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() &&
+                      request.resource.data.keys().hasAll(['action', 'adminId', 'timestamp']) &&
+                      request.resource.data.adminId == request.auth.uid &&
+                      request.resource.data.timestamp == request.time;
+    }
+    
+    // Deny all other document access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
