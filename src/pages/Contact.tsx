@@ -117,15 +117,6 @@ const contactMethods = [
     link: "tel:+917634961424",
     gradient: "from-indigo-500/20 to-blue-500/20",
     hoverColor: "indigo"
-  },
-  {
-    icon: MapPin,
-    title: "Visit Us",
-    description: "Our headquarters",
-    value: "San Francisco, CA",
-    link: "#location",
-    gradient: "from-indigo-500/20 to-blue-500/20",
-    hoverColor: "indigo"
   }
 ];
 
