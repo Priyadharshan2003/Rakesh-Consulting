@@ -8,8 +8,7 @@ const About: React.FC = () => {
         {/* Profile Section */}
         <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
           <div className="bg-gradient-to-r from-indigo-600 to-blue-500 p-8 text-white">
-            <h1 className="text-4xl font-bold mb-4">Rakesh Kumar</h1>
-            <p className="text-xl opacity-90">SAP Full Stack Developer & AI Specialist</p>
+            <h1 className="text-xl opacity-90">SAP Full Stack Developer & AI Specialist</h1>
           </div>
           
           <div className="p-8">
@@ -91,7 +90,7 @@ const About: React.FC = () => {
                   +91 7634961424
                 </a>
                 <a 
-                  href="https://www.linkedin.com/in/rakesh-kumar-21164b154"
+                  // href="https://www.linkedin.com/in/rakesh-kumar-21164b154"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 text-gray-600 hover:text-indigo-600 transition-colors"

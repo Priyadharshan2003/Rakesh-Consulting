@@ -32,7 +32,7 @@ const Footer: React.FC = () => {
             <h3 className="text-xl font-bold mb-4 text-indigo-400">Connect</h3>
             <div className="space-y-2">
               <a 
-                href="https://www.linkedin.com/in/rakesh-kumar-21164b154"
+                // href="https://www.linkedin.com/in/rakesh-kumar-21164b154"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 hover:text-indigo-400 transition-colors"
@@ -61,7 +61,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="text-center mt-12 pt-8 border-t border-gray-800">
-          <p className="text-gray-400">&copy; {new Date().getFullYear()} Rakesh Kumar Consulting. All rights reserved.</p>
+          <p className="text-gray-400">&copy; {new Date().getFullYear()} Top 10 Consulting. All rights reserved.</p>
         </div>
       </div>
     </footer>
