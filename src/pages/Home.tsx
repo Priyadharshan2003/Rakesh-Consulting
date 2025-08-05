@@ -45,34 +45,35 @@ const Home: React.FC = () => {
       />
       
       {/* Hero Section */}
-      <section className="relative z-10 min-h-screen flex items-center">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+      <section className="relative z-10 min-h-[85vh] sm:min-h-screen flex items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32">
           <div className="text-center lg:text-left lg:grid lg:grid-cols-2 lg:gap-12 items-center">
             <motion.div
               initial="hidden"
               animate="visible"
               variants={fadeInUp}
+              className="mb-12 lg:mb-0"
             >
-              <h1 className="text-5xl md:text-7xl font-extrabold mb-6">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-4 sm:mb-6">
                 <span className="block text-gray-900">Business</span>
                 <span className="block bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
                   Simplified.
                 </span>
               </h1>
-              <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed">
+              <p className="text-lg sm:text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                 Transform your enterprise with SAP solutions. Unlock efficiency, innovation, and growth with our expert consulting services.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link 
                   to="/contact" 
-                  className="inline-flex items-center px-8 py-4 rounded-full bg-gradient-to-r from-indigo-600 to-blue-500 text-white font-semibold text-lg transition-all hover:scale-105 hover:shadow-lg"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-gradient-to-r from-indigo-600 to-blue-500 text-white font-semibold text-base sm:text-lg transition-all hover:scale-105 hover:shadow-lg"
                 >
                   Get Started
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
                 <Link 
                   to="/services"
-                  className="inline-flex items-center px-8 py-4 rounded-full border-2 border-gray-200 text-gray-700 font-semibold text-lg transition-all hover:border-indigo-500 hover:text-indigo-600"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-full border-2 border-gray-200 text-gray-700 font-semibold text-base sm:text-lg transition-all hover:border-indigo-500 hover:text-indigo-600"
                 >
                   Learn More
                   <ChevronRight className="ml-2 h-5 w-5" />
@@ -90,7 +91,7 @@ const Home: React.FC = () => {
                 <img 
                   src="/assets/image.png" 
                   alt="Digital Transformation Illustration" 
-                  className="relative z-10 rounded-3xl shadow-xl"
+                  className="relative z-10 rounded-3xl shadow-xl w-full"
                 />
               </div>
             </motion.div>
@@ -163,24 +164,24 @@ const Home: React.FC = () => {
 </section>
 
       {/* Solutions Section */}
-      <section className="relative z-10 bg-gray-50 py-24 px-4">
+      <section className="relative z-10 bg-gray-50 py-16 sm:py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div 
-            className="text-center mb-16"
+            className="text-center mb-12 sm:mb-16"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 sm:mb-6">
               Customized Solutions For Your Need
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-base sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
               Comprehensive SAP solutions tailored to transform your business processes and drive digital innovation.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* RISE with SAP */}
             <motion.div
               className="group relative overflow-hidden rounded-2xl bg-white p-8 shadow-lg transition-all hover:shadow-xl"
@@ -192,14 +193,14 @@ const Home: React.FC = () => {
             >
               <div className="absolute right-0 top-0 -mt-4 -mr-4 h-24 w-24 rounded-full bg-indigo-50 opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
               <div className="relative">
-                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-                  <Zap className="h-6 w-6" />
+                <div className="mb-3 sm:mb-4 inline-flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+                  <Zap className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
-                <h3 className="mb-3 text-2xl font-bold">RISE with SAP</h3>
-                <p className="text-gray-600 mb-4">
+                <h3 className="mb-2 sm:mb-3 text-xl sm:text-2xl font-bold">RISE with SAP</h3>
+                <p className="text-sm sm:text-base text-gray-600 mb-4">
                   Transform your business with cloud-first ERP solutions and intelligent technologies.
                 </p>
-                <Link to="/services/rise-with-sap" className="inline-flex items-center text-indigo-600 font-semibold hover:text-indigo-700">
+                <Link to="/services/rise-with-sap" className="inline-flex items-center text-indigo-600 font-semibold hover:text-indigo-700 text-sm sm:text-base">
                   Learn More <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </div>
@@ -257,24 +258,24 @@ const Home: React.FC = () => {
       </section>
 
       {/* Services Section */}
-      <section className="relative z-10 py-24 px-4">
+      <section className="relative z-10 py-16 sm:py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div 
-            className="text-center mb-16"
+            className="text-center mb-12 sm:mb-16"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 sm:mb-6">
               Empowering Your SAP Journey
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-base sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
               End-to-end SAP services to drive your digital transformation success.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Implementation */}
             <motion.div
               className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-50 to-white p-8 border border-indigo-100/50 transition-all hover:shadow-xl"
@@ -381,24 +382,24 @@ const Home: React.FC = () => {
       </section>
 
       {/* Industries Section */}
-      <section className="relative z-10 bg-gradient-to-b from-gray-50 to-white py-24 px-4">
+      <section className="relative z-10 bg-gradient-to-b from-gray-50 to-white py-16 sm:py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div 
-            className="text-center mb-16"
+            className="text-center mb-12 sm:mb-16"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 sm:mb-6">
               Industries We Serve
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-base sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
               Expertise across diverse industries to deliver targeted solutions for your specific needs.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 lg:gap-8">
             {industries.map((industry, index) => (
               <motion.div
                 key={industry.name}
