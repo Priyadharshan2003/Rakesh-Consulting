@@ -98,6 +98,70 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+     {/* Client Marquee Section */}
+<section className="relative z-10 py-20 bg-white overflow-hidden">
+  <div className="max-w-7xl mx-auto px-4">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      viewport={{ once: true }}
+      className="text-center mb-12"
+    >
+      <h2 className="text-3xl font-bold text-gray-900">Trusted by Industry Leaders</h2>
+    </motion.div>
+  </div>
+
+  <div className="relative">
+    {/* Gradient Overlays */}
+    <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white to-transparent z-30 pointer-events-none" />
+    <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white to-transparent z-30 pointer-events-none" />
+
+    {/* Marquee */}
+    <div className="overflow-hidden">
+      <div className="flex animate-marquee whitespace-nowrap gap-12 px-4">
+        {[
+          "adam_infotech_logo.png",
+          "capgemini_logo.jpeg",
+          "DTJ_logo.png",
+          "highbar-technocrat-sap-gold-partner_logo.png",
+          "proximaray_technologies_logo.jpeg",
+          "Stripedata_logo.png",
+          "sage_logo.png",
+        ].map((logo, index) => (
+          <div key={index} className="flex items-center justify-center min-w-[120px]">
+            <img
+              src={`/assets/clients/${logo}`}
+              alt={logo.replace(/_/g, ' ').replace(/\..+$/, '')}
+              className="h-16 w-auto hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+          </div>
+        ))}
+        {/* Duplicate set for seamless loop */}
+        {[
+          "adam_infotech_logo.png",
+          "capgemini_logo.jpeg",
+          "DTJ_logo.png",
+          "highbar-technocrat-sap-gold-partner_logo.png",
+          "proximaray_technologies_logo.jpeg",
+          "Stripedata_logo.png",
+          "sage_logo.png",
+        ].map((logo, index) => (
+          <div key={`dup-${index}`} className="flex items-center justify-center min-w-[120px]">
+            <img
+              src={`/assets/clients/${logo}`}
+              alt={logo.replace(/_/g, ' ').replace(/\..+$/, '')}
+              className="h-16 w-auto hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
       {/* Solutions Section */}
       <section className="relative z-10 bg-gray-50 py-24 px-4">
         <div className="max-w-7xl mx-auto">

@@ -32,12 +32,12 @@ const Footer: React.FC = () => {
             <h3 className="text-xl font-bold mb-4 text-indigo-400">Connect</h3>
             <div className="space-y-2">
               <a 
-                // href="https://www.linkedin.com/in/rakesh-kumar-21164b154"
+                href="https://www.linkedin.com/company/arig1/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 hover:text-indigo-400 transition-colors"
               >
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
                 </svg>
                 LinkedIn Profile

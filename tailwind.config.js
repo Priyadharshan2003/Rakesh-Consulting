@@ -6,7 +6,14 @@ module.exports = {
   theme: {
     extend: {
       animation: {
-        'scroll': 'scroll var(--duration) linear infinite',
+        marquee: 'scroll 25s linear infinite',
+        marquee2: 'scroll 25s linear infinite',
+      },
+      keyframes: {
+        scroll: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-100%)' }
+        }
       },
       keyframes: {
         scroll: {

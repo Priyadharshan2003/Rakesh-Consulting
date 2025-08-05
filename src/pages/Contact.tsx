@@ -117,7 +117,7 @@ const contactMethods = [
     link: "tel:+917634961424",
     gradient: "from-indigo-500/20 to-blue-500/20",
     hoverColor: "indigo"
-  }
+  } 
 ];
 
 const Contact: React.FC = () => {
