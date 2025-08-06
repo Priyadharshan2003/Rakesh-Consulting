@@ -11,7 +11,7 @@ const expertise = [
     title: 'SAP BTP Business Process Automation (BPA)',
     description: 'Automate workflows and business processes using SAP BPA tools.',
     technologies: ['Process Automation', 'Workflow Management', 'SAP Build'],
-    level: 'Advanced',
+    level: 'Expert',
   },
   {
     title: 'SAP BTP Integration Suite',
@@ -23,7 +23,7 @@ const expertise = [
     title: 'SAP BTP Administration & Security',
     description: 'Manage, secure, and monitor SAP BTP environments.',
     technologies: ['IAM', 'Audit Logs', 'Entitlements', 'Subaccount Management'],
-    level: 'Advanced',
+    level: 'Expert',
   },
   {
     title: 'SAP Fiori & UI5',
@@ -41,37 +41,37 @@ const expertise = [
     title: 'ABAP Cloud & Data',
     description: 'Modern ABAP development in the cloud with clean core principles.',
     technologies: ['ABAP RESTful', 'RAP', 'Core Data Services'],
-    level: 'Advanced',
+    level: 'Expert',
   },
   {
     title: 'SAP BASIS & Administration',
     description: 'System administration, monitoring, and performance tuning.',
     technologies: ['SAP NetWeaver', 'System Monitoring', 'Transport Management'],
-    level: 'Advanced',
+    level: 'Expert',
   },
   {
     title: 'SAP Functional Modules',
     description: 'Functional expertise across key SAP modules.',
     technologies: ['FI', 'MM', 'SD', 'PP'],
-    level: 'Intermediate',
+    level: 'Expert',
   },
   {
     title: 'SAP Finance Solutions',
     description: 'Financial management and reporting using SAP Finance tools.',
     technologies: ['SAP FI', 'CO', 'S/4HANA Finance'],
-    level: 'Advanced',
+    level: 'Expert',
   },
   {
     title: 'SAP SuccessFactors & HCM',
     description: 'Cloud-based human capital management and core HR processes.',
     technologies: ['Employee Central', 'Recruiting', 'Payroll'],
-    level: 'Advanced',
+    level: 'Expert',
   },
   {
     title: 'SAP Ariba',
     description: 'Procurement and supply chain collaboration using SAP Ariba.',
     technologies: ['Sourcing', 'Procurement', 'Supplier Management'],
-    level: 'Intermediate',
+    level: 'Expert',
   },
 ];
 

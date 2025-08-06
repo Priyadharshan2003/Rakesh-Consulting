@@ -25,30 +25,7 @@ const IndustryCard: React.FC<{ industry: string; icon: string }> = ({ industry, 
   </motion.div>
 );
 
-const ClientLogo: React.FC<{ logo: string; name: string }> = ({ logo, name }) => (
-  <div className="mx-8 flex items-center">
-    <img 
-      src={logo} 
-      alt={name}
-      className="h-16 w-auto hover:scale-105 transition-transform duration-300"
-      onError={(e) => {
-        const target = e.target as HTMLImageElement;
-        target.onerror = null;
-        target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff&size=128`;
-      }}
-    />
-  </div>
-);
 
-const LogoMarquee: React.FC<{ clients: Array<{ name: string; logo: string }> }> = ({ clients }) => (
-  <div className="relative flex overflow-hidden">
-    <div className="flex animate-marquee whitespace-nowrap">
-      {[...clients, ...clients, ...clients].map((client, index) => (
-        <ClientLogo key={`${client.name}-${index}`} {...client} />
-      ))}
-    </div>
-  </div>
-);
 
 const About: React.FC = () => {
   const services = [
@@ -116,40 +93,6 @@ const About: React.FC = () => {
       icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
       </svg>`
-    }
-  ];
-
-  const clientsRow1 = [
-    {
-      name: "Capgemini",
-      logo: "/assets/clients/capgemini_logo.jpeg"
-    },
-    {
-      name: "Stripedata",
-      logo: "/assets/clients/Stripedata_logo.png"
-    },
-    {
-      name: "Proximaray Technologies",
-      logo: "/assets/clients/proximaray_technologies_logo.jpeg"
-    },
-    {
-      name: "DTJ Technology",
-      logo: "/assets/clients/DTJ_logo.png"
-    }
-  ];
-
-  const clientsRow2 = [
-    {
-      name: "Adam Infotech",
-      logo: "/assets/clients/adam_infotech_logo.png"
-    },
-    {
-      name: "Sage Technology",
-      logo: "/assets/clients/sage_logo.png"
-    },
-    {
-      name: "Highbar Technocrat",
-      logo: "/assets/clients/highbar-technocrat-sap-gold-partner_logo.png"
     }
   ];
 
@@ -224,38 +167,6 @@ const About: React.FC = () => {
         </div>
       </section>
 
-     {/* Clients Section */}
-<section className="py-20 bg-white overflow-hidden">
-  <div className="max-w-7xl mx-auto px-4">
-    <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-      Our Esteemed Clients
-    </h2>
-
-    <div className="space-y-16">
-      <div className="relative">
-        {/* Gradient Overlays */}
-        <div className="absolute left-0 top-0 bottom-0 w-40 bg-gradient-to-r from-white to-transparent z-10"></div>
-        <div className="absolute right-0 top-0 bottom-0 w-40 bg-gradient-to-l from-white to-transparent z-10"></div>
-        
-        {/* Row 1 */}
-        <div className="w-full">
-          <LogoMarquee clients={clientsRow1} />
-        </div>
-      </div>
-
-      <div className="relative">
-        {/* Gradient Overlays */}
-        <div className="absolute left-0 top-0 bottom-0 w-40 bg-gradient-to-r from-white to-transparent z-10"></div>
-        <div className="absolute right-0 top-0 bottom-0 w-40 bg-gradient-to-l from-white to-transparent z-10"></div>
-        
-        {/* Row 2 */}
-        <div className="w-full">
-          <LogoMarquee clients={clientsRow2} />
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
 
       {/* Contact Section */}
@@ -298,5 +209,4 @@ const About: React.FC = () => {
     </div>
   );
 };
-
 export default About;

@@ -7,6 +7,13 @@
 @layer base {
   html {
     font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
   }
 }
 

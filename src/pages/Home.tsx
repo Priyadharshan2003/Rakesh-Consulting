@@ -81,17 +81,20 @@ const Home: React.FC = () => {
               </div>
             </motion.div>
             <motion.div
-              className="hidden lg:block"
+              className="mt-12 lg:mt-0 lg:block"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <div className="relative">
+              <div className="relative max-w-lg mx-auto lg:max-w-none">
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-blue-500/10 rounded-3xl transform rotate-3"></div>
                 <img 
                   src="/assets/image.png" 
                   alt="Digital Transformation Illustration" 
-                  className="relative z-10 rounded-3xl shadow-xl w-full"
+                  className="relative z-10 rounded-3xl shadow-xl w-full object-cover object-center"
+                  loading="eager"
+                  width={600}
+                  height={400}
                 />
               </div>
             </motion.div>
@@ -120,7 +123,7 @@ const Home: React.FC = () => {
 
     {/* Marquee */}
     <div className="overflow-hidden">
-      <div className="flex animate-marquee whitespace-nowrap gap-12 px-4">
+      <div className="flex animate-marquee whitespace-nowrap gap-8 sm:gap-12 px-4">
         {[
           "adam_infotech_logo.png",
           "capgemini_logo.jpeg",
@@ -130,12 +133,14 @@ const Home: React.FC = () => {
           "Stripedata_logo.png",
           "sage_logo.png",
         ].map((logo, index) => (
-          <div key={index} className="flex items-center justify-center min-w-[120px]">
+          <div key={index} className="flex items-center justify-center min-w-[100px] sm:min-w-[120px]">
             <img
               src={`/assets/clients/${logo}`}
               alt={logo.replace(/_/g, ' ').replace(/\..+$/, '')}
-              className="h-16 w-auto hover:scale-105 transition-transform duration-300"
+              className="h-12 sm:h-16 w-auto hover:scale-105 transition-transform duration-300"
               loading="lazy"
+              width={120}
+              height={48}
             />
           </div>
         ))}
@@ -149,12 +154,14 @@ const Home: React.FC = () => {
           "Stripedata_logo.png",
           "sage_logo.png",
         ].map((logo, index) => (
-          <div key={`dup-${index}`} className="flex items-center justify-center min-w-[120px]">
+          <div key={`dup-${index}`} className="flex items-center justify-center min-w-[100px] sm:min-w-[120px]">
             <img
               src={`/assets/clients/${logo}`}
               alt={logo.replace(/_/g, ' ').replace(/\..+$/, '')}
-              className="h-16 w-auto hover:scale-105 transition-transform duration-300"
+              className="h-12 sm:h-16 w-auto hover:scale-105 transition-transform duration-300"
               loading="lazy"
+              width={120}
+              height={48}
             />
           </div>
         ))}
