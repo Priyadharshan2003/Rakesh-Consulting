@@ -19,15 +19,14 @@ import { Timestamp } from 'firebase/firestore';
 
 const Home: React.FC = () => {
   const [homepageContent, setHomepageContent] = useState<HomepageContent | null>(null);
-  const [showNavMenu, setShowNavMenu] = useState(false);
-  const [activeSection, setActiveSection] = useState('hero');
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
 
   // Smooth scroll function
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      const headerOffset = 80; // Account for fixed header
+      const headerOffset = 80;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
@@ -36,7 +35,6 @@ const Home: React.FC = () => {
         behavior: 'smooth'
       });
     }
-    setShowNavMenu(false);
   };
 
   // Scroll to top function
@@ -47,12 +45,10 @@ const Home: React.FC = () => {
     });
   };
 
-  // Track active section and scroll position
+  // Track scroll position and active section
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
-      
-      // Show/hide back to top button
       setShowBackToTop(scrollPosition > 300);
 
       // Track active section
@@ -71,29 +67,11 @@ const Home: React.FC = () => {
       }
     };
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setShowNavMenu(false);
-      }
-    };
-
     window.addEventListener('scroll', handleScroll);
-    window.addEventListener('keydown', handleKeyDown);
-    
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
-
-  // Navigation items
-  const navItems = [
-    { id: 'hero', label: 'Home' },
-    { id: 'clients', label: 'Clients' },
-    { id: 'solutions', label: 'Solutions' },
-    { id: 'services', label: 'Services' },
-    { id: 'industries', label: 'Industries' }
-  ];
 
   // Fetch homepage content
   useEffect(() => {
@@ -147,64 +125,25 @@ const Home: React.FC = () => {
         waveAmpY={10}
         className="opacity-20"
       />
-      
-      {/* In-Page Navigation */}
-      <div className="fixed top-20 right-4 z-50">
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setShowNavMenu(!showNavMenu)}
-          className="lg:hidden mb-2 p-3 bg-white rounded-full shadow-lg border border-gray-200 hover:shadow-xl transition-all"
-        >
-          {showNavMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
 
-        {/* Navigation Menu */}
-        <nav className={`${showNavMenu ? 'flex' : 'hidden'} lg:flex flex-col space-y-1 bg-white/95 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-gray-200`}>
-          {navItems.map((item) => (
+      {/* Mobile In-Page Navigation */}
+      <div className="fixed right-4 top-1/2 -translate-y-1/2 z-50 md:hidden">
+        <div className="flex flex-col space-y-3">
+          {['hero', 'clients', 'solutions', 'services', 'industries'].map((section) => (
             <button
-              key={item.id}
-              onClick={() => scrollToSection(item.id)}
-              className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all text-left group ${
-                activeSection === item.id
-                  ? 'text-indigo-600 bg-indigo-50'
-                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
-              }`}
-            >
-              {item.label}
-              {activeSection === item.id && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-indigo-600 rounded-full" />
-              )}
-            </button>
-          ))}
-        </nav>
-
-        {/* Quick Navigation Dots */}
-        <div className="hidden lg:flex flex-col space-y-2 mt-4 items-center">
-          {navItems.map((item) => (
-            <button
-              key={`dot-${item.id}`}
-              onClick={() => scrollToSection(item.id)}
-              className={`w-2 h-2 rounded-full transition-all ${
-                activeSection === item.id
-                  ? 'bg-indigo-600 scale-125'
-                  : 'bg-gray-300 hover:bg-indigo-400'
-              }`}
-              aria-label={`Navigate to ${item.label}`}
+              key={section}
+              onClick={() => scrollToSection(section)}
+              className="w-2 h-2 rounded-full transition-all"
+              style={{
+                backgroundColor: activeSection === section ? '#4f46e5' : '#d1d5db',
+                transform: `scale(${activeSection === section ? '1.5' : '1'})`,
+              }}
+              aria-label={`Go to ${section} section`}
             />
           ))}
         </div>
-
-        {/* Scroll Progress Indicator */}
-        <div className="hidden lg:block mt-4 w-1 h-32 bg-gray-200 rounded-full overflow-hidden">
-          <div 
-            className="w-full bg-gradient-to-b from-indigo-500 to-blue-500 rounded-full transition-all duration-300 ease-out"
-            style={{
-              height: `${Math.min((window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100, 100)}%`
-            }}
-          />
-        </div>
       </div>
-
+      
       {/* Back to Top Button */}
       {showBackToTop && (
         <motion.button
@@ -248,13 +187,13 @@ const Home: React.FC = () => {
                   Get Started
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
-                <button 
-                  onClick={() => scrollToSection('solutions')}
+                <Link 
+                  to="/solutions"
                   className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-full border-2 border-gray-200 text-gray-700 font-semibold text-base sm:text-lg transition-all hover:border-indigo-500 hover:text-indigo-600"
                 >
                   Learn More
                   <ChevronRight className="ml-2 h-5 w-5" />
-                </button>
+                </Link>
               </div>
             </motion.div>
             <motion.div

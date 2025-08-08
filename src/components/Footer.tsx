@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { homepageService, HomepageContent } from '../services/firebaseService';
 import { Timestamp } from 'firebase/firestore';
 
@@ -78,16 +79,14 @@ const Footer: React.FC = () => {
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-xl font-bold mb-4 text-indigo-400">Technologies</h3>
-            <ul className="space-y-2 text-sm grid grid-cols-2 gap-2">
-              <li>SAP BTP</li>
-              <li>SAP Fiori/UI5</li>
-              <li>SAP HANA Cloud</li>
-              <li>SAP Build</li>
-              <li>Process Automation</li>
-              <li>Event Mesh</li>
-              <li>Core AI/ML</li>
-              <li>Node.js</li>
+            <h3 className="text-xl font-bold mb-4 text-indigo-400">Quick Links</h3>
+            <ul className="space-y-2">
+              <li><Link to="/" className="hover:text-indigo-400 transition-colors">Home</Link></li>
+              <li><Link to="/about" className="hover:text-indigo-400 transition-colors">About</Link></li>
+              <li><Link to="/services" className="hover:text-indigo-400 transition-colors">Services</Link></li>
+              <li><Link to="/expertise" className="hover:text-indigo-400 transition-colors">Expertise</Link></li>
+              <li><Link to="/careers" className="hover:text-indigo-400 transition-colors">Careers</Link></li>
+              <li><Link to="/contact" className="hover:text-indigo-400 transition-colors">Contact</Link></li>
             </ul>
           </div>
         </div>
