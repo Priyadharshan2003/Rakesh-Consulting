@@ -1,16 +1,19 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    
     // Helper function to check if user is admin
     function isAdmin() {
       return request.auth != null && 
         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
+    
     // Helper function to check if user is authenticated
     function isAuthenticated() {
       return request.auth != null;
     }
+    
     // Users collection - only authenticated users can read their own data
     // Admins can read all user data
     match /users/{userId} {
@@ -18,29 +21,37 @@ service cloud.firestore {
       allow write: if isAuthenticated() && request.auth.uid == userId;
       allow create: if isAuthenticated() && request.auth.uid == userId;
     }
+    
     // Contact form submissions
     match /contact_submissions/{document} {
       // Anyone can create contact submissions
       allow create: if true;
+      
       // Only admins can read contact submissions
       allow read: if isAdmin();
+      
       // Only admins can update/delete
       allow update, delete: if isAdmin();
     }
+    
     // Career applications
     match /career_submissions/{document} {
       // Anyone can create career applications
       allow create: if true;
+      
       // Only admins can read career applications
       allow read: if isAdmin();
+      
       // Only admins can update/delete
       allow update, delete: if isAdmin();
     }
+    
     // Homepage content - anyone can read, only admins can modify
     match /homepage_content/{document} {
       allow read: if true;
       allow write: if isAdmin();
     }
+    
     // Deny all other document access
     match /{document=**} {
       allow read, write: if false;

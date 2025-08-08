@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -13,24 +13,9 @@ import Careers from './pages/Careers';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import NotFound from './pages/NotFound';
-import { createAdminUser } from './utils/createAdmin';
 import './App.css';
 
 function App() {
-  useEffect(() => {
-    // Create admin user on first load
-    const initializeAdmin = async () => {
-      try {
-        await createAdminUser();
-        console.log('Admin user setup completed');
-      } catch (error) {
-        console.log('Admin user might already exist or Firebase not configured:', error);
-      }
-    };
-    
-    initializeAdmin();
-  }, []);
-
   return (
     <AuthProvider>
       <Router>
@@ -49,11 +34,11 @@ function App() {
                 path="/admin/dashboard" 
                 element={
                   <ProtectedRoute>
-              <Route path="*" element={<NotFound />} />
                     <AdminDashboard />
                   </ProtectedRoute>
                 } 
               />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           <Footer />

@@ -24,7 +24,6 @@ export interface HomePageContent {
   heroDescription: string;
   aboutTitle: string;
   aboutDescription: string;
-  gstNumber: string;
   companyAddress: string;
   companyPhone: string;
   companyEmail: string;

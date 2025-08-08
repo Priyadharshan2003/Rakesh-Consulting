@@ -2,13 +2,10 @@
 // You can run this script once to create your admin account
 
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 
-const createAdminUser = async () => {
-  const email = 'admin@rakeshconsulting.com'; // Change this to your desired admin email
-  const password = 'AdminPassword123!'; // Change this to a secure password
-  
+export const createAdminUser = async (email: string, password: string) => {
   try {
     // Create user with email and password
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -18,20 +15,28 @@ const createAdminUser = async () => {
     await setDoc(doc(db, 'users', user.uid), {
       email: user.email,
       role: 'admin',
-      createdAt: new Date(),
+      createdAt: Timestamp.now(),
+      displayName: email.split('@')[0]
     });
     
     console.log('Admin user created successfully!');
     console.log('Email:', email);
-    console.log('Password:', password);
     console.log('User ID:', user.uid);
     
-  } catch (error) {
-    console.error('Error creating admin user:', error);
+    return user;
+  } catch (error: any) {
+    console.error('Error creating admin user:', error.message);
+    throw error;
   }
 };
 
-// Uncomment the line below and run this script once to create your admin user
-createAdminUser();
+// Example usage:
+// To create an admin user, call this function in the browser console:
+// import { createAdminUser } from './utils/createAdmin';
+// createAdminUser('admin@yourcompany.com', 'your-secure-password')
+//   .then(user => console.log('Admin created:', user.uid))
+//   .catch(error => console.error('Failed:', error.message));
 
-export { createAdminUser };
+// Alternatively, use the setupAdmin.ts script which reads credentials from adminCredentials.json:
+// import { setupAdmin } from './utils/setupAdmin';
+// setupAdmin();

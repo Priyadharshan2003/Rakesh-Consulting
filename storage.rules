@@ -1,0 +1,28 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // CVs uploaded via career applications - Allow all for development
+    match /cvs/{fileName} {
+      // Allow anyone to upload, read CV files for development
+      allow read, write: if true;
+    }
+    
+    // Resumes uploaded via contact form - Allow all for development  
+    match /resumes/{allPaths=**} {
+      // Allow anyone to upload, read resume files for development
+      allow read, write: if true;
+    }
+    
+    // Company assets (logos, images, etc.)
+    match /assets/{fileName} {
+      // Anyone can read public assets
+      allow read, write: if true;
+    }
+    
+    // Allow all other files for development - REMOVE IN PRODUCTION
+    match /{allPaths=**} {
+      allow read, write: if true;
+    }
+  }
+}

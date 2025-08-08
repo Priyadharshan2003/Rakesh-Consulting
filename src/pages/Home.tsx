@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Waves } from '../components/ui/waves';
 import { motion } from 'framer-motion';
@@ -10,10 +10,114 @@ import {
   Users, 
   BarChart, 
   Code, 
-  Settings 
+  Settings,
+  Menu,
+  X 
 } from 'lucide-react';
+import { homepageService, HomepageContent } from '../services/firebaseService';
+import { Timestamp } from 'firebase/firestore';
 
 const Home: React.FC = () => {
+  const [homepageContent, setHomepageContent] = useState<HomepageContent | null>(null);
+  const [showNavMenu, setShowNavMenu] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // Smooth scroll function
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const headerOffset = 80; // Account for fixed header
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+    setShowNavMenu(false);
+  };
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
+  // Track active section and scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      
+      // Show/hide back to top button
+      setShowBackToTop(scrollPosition > 300);
+
+      // Track active section
+      const sections = ['hero', 'clients', 'solutions', 'services', 'industries'];
+      const scrollPositionWithOffset = scrollPosition + 100;
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const { offsetTop, offsetHeight } = element;
+          if (scrollPositionWithOffset >= offsetTop && scrollPositionWithOffset < offsetTop + offsetHeight) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowNavMenu(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  // Navigation items
+  const navItems = [
+    { id: 'hero', label: 'Home' },
+    { id: 'clients', label: 'Clients' },
+    { id: 'solutions', label: 'Solutions' },
+    { id: 'services', label: 'Services' },
+    { id: 'industries', label: 'Industries' }
+  ];
+
+  // Fetch homepage content
+  useEffect(() => {
+    const fetchHomepageContent = async () => {
+      try {
+        const content = await homepageService.get();
+        setHomepageContent(content);
+      } catch (error) {
+        console.error('Error fetching homepage content:', error);
+        // Fallback to default values if fetch fails
+        setHomepageContent({
+          heroTitle: 'Business Simplified.',
+          heroSubtitle: 'Transform your enterprise with SAP solutions.',
+          aboutDescription: 'Unlock efficiency, innovation, and growth with our expert consulting services.',
+          phoneNumber: '+91 7634961424',
+          email: 'rakeshrit2015@outlook.com',
+          updatedAt: Timestamp.now()
+        });
+      }
+    };
+
+    fetchHomepageContent();
+  }, []);
+
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: { 
@@ -44,8 +148,79 @@ const Home: React.FC = () => {
         className="opacity-20"
       />
       
+      {/* In-Page Navigation */}
+      <div className="fixed top-20 right-4 z-50">
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setShowNavMenu(!showNavMenu)}
+          className="lg:hidden mb-2 p-3 bg-white rounded-full shadow-lg border border-gray-200 hover:shadow-xl transition-all"
+        >
+          {showNavMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+
+        {/* Navigation Menu */}
+        <nav className={`${showNavMenu ? 'flex' : 'hidden'} lg:flex flex-col space-y-1 bg-white/95 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-gray-200`}>
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => scrollToSection(item.id)}
+              className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all text-left group ${
+                activeSection === item.id
+                  ? 'text-indigo-600 bg-indigo-50'
+                  : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
+              }`}
+            >
+              {item.label}
+              {activeSection === item.id && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-indigo-600 rounded-full" />
+              )}
+            </button>
+          ))}
+        </nav>
+
+        {/* Quick Navigation Dots */}
+        <div className="hidden lg:flex flex-col space-y-2 mt-4 items-center">
+          {navItems.map((item) => (
+            <button
+              key={`dot-${item.id}`}
+              onClick={() => scrollToSection(item.id)}
+              className={`w-2 h-2 rounded-full transition-all ${
+                activeSection === item.id
+                  ? 'bg-indigo-600 scale-125'
+                  : 'bg-gray-300 hover:bg-indigo-400'
+              }`}
+              aria-label={`Navigate to ${item.label}`}
+            />
+          ))}
+        </div>
+
+        {/* Scroll Progress Indicator */}
+        <div className="hidden lg:block mt-4 w-1 h-32 bg-gray-200 rounded-full overflow-hidden">
+          <div 
+            className="w-full bg-gradient-to-b from-indigo-500 to-blue-500 rounded-full transition-all duration-300 ease-out"
+            style={{
+              height: `${Math.min((window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100, 100)}%`
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-4 z-50 p-3 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 hover:shadow-xl transition-all group"
+          aria-label="Back to top"
+        >
+          <ChevronRight className="w-5 h-5 transform -rotate-90 group-hover:scale-110 transition-transform" />
+        </motion.button>
+      )}
+      
       {/* Hero Section */}
-      <section className="relative z-10 min-h-[85vh] sm:min-h-screen flex items-center">
+      <section id="hero" className="relative z-10 min-h-[85vh] sm:min-h-screen flex items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32">
           <div className="text-center lg:text-left lg:grid lg:grid-cols-2 lg:gap-12 items-center">
             <motion.div
@@ -55,13 +230,15 @@ const Home: React.FC = () => {
               className="mb-12 lg:mb-0"
             >
               <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-4 sm:mb-6">
-                <span className="block text-gray-900">Business</span>
+                <span className="block text-gray-900">
+                  {homepageContent?.heroTitle || 'Business'}
+                </span>
                 <span className="block bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
                   Simplified.
                 </span>
               </h1>
               <p className="text-lg sm:text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                Transform your enterprise with SAP solutions. Unlock efficiency, innovation, and growth with our expert consulting services.
+                {homepageContent?.heroSubtitle || 'Transform your enterprise with SAP solutions. Unlock efficiency, innovation, and growth with our expert consulting services.'}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link 
@@ -71,13 +248,13 @@ const Home: React.FC = () => {
                   Get Started
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
-                <Link 
-                  to="/services"
+                <button 
+                  onClick={() => scrollToSection('solutions')}
                   className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-full border-2 border-gray-200 text-gray-700 font-semibold text-base sm:text-lg transition-all hover:border-indigo-500 hover:text-indigo-600"
                 >
                   Learn More
                   <ChevronRight className="ml-2 h-5 w-5" />
-                </Link>
+                </button>
               </div>
             </motion.div>
             <motion.div
@@ -103,7 +280,7 @@ const Home: React.FC = () => {
       </section>
 
      {/* Client Marquee Section */}
-<section className="relative z-10 py-20 bg-white overflow-hidden">
+<section id="clients" className="relative z-10 py-20 bg-white overflow-hidden">
   <div className="max-w-7xl mx-auto px-4">
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -171,7 +348,7 @@ const Home: React.FC = () => {
 </section>
 
       {/* Solutions Section */}
-      <section className="relative z-10 bg-gray-50 py-16 sm:py-24 px-4">
+      <section id="solutions" className="relative z-10 bg-gray-50 py-16 sm:py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div 
             className="text-center mb-12 sm:mb-16"
@@ -184,7 +361,7 @@ const Home: React.FC = () => {
               Customized Solutions For Your Need
             </h2>
             <p className="text-base sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
-              Comprehensive SAP solutions tailored to transform your business processes and drive digital innovation.
+              {homepageContent?.aboutDescription || 'Comprehensive SAP solutions tailored to transform your business processes and drive digital innovation.'}
             </p>
           </motion.div>
 
@@ -265,7 +442,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Services Section */}
-      <section className="relative z-10 py-16 sm:py-24 px-4">
+      <section id="services" className="relative z-10 py-16 sm:py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div 
             className="text-center mb-12 sm:mb-16"
@@ -389,7 +566,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Industries Section */}
-      <section className="relative z-10 bg-gradient-to-b from-gray-50 to-white py-16 sm:py-24 px-4">
+      <section id="industries" className="relative z-10 bg-gradient-to-b from-gray-50 to-white py-16 sm:py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div 
             className="text-center mb-12 sm:mb-16"

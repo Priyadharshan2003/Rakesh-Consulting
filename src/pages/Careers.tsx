@@ -6,21 +6,22 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Mail, 
   Phone, 
-  Linkedin, 
-  Upload, 
-  X, 
+  CheckCircle,
   ChevronDown,
-  Building2,
-  Code,
-  Database,
+  X,
+  Linkedin,
   Cloud,
-  Cpu,
+  Globe,
+  Database,
+  Building2,
   Workflow,
   Zap,
-  Globe,
-  CheckCircle,
+  Cpu,
+  Code,
   Sparkles
 } from 'lucide-react';
+import { careerService, homepageService, HomepageContent } from '../services/firebaseService';
+import { Timestamp } from 'firebase/firestore';
 
 // Shining Text Component
 function ShiningText({ text }: { text: string }) {
@@ -487,7 +488,7 @@ const MultiSelect = ({ value, onChange, options, placeholder }: any) => {
   );
 };
 
-// Form interfaces
+
 interface CareerFormInputs {
   name: string;
   email: string;
@@ -499,15 +500,90 @@ interface CareerFormInputs {
 }
 
 const Careers: React.FC = () => {
-  const { register, handleSubmit, control, formState: { errors, isSubmitSuccessful }, reset } = useForm<CareerFormInputs>();
+  const { register, handleSubmit, control, formState: { errors }, reset } = useForm<CareerFormInputs>();
   const [cvFileName, setCvFileName] = useState('');
   const [showToast, setShowToast] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string>('');
+  const [homepageContent, setHomepageContent] = useState<HomepageContent | null>(null);
 
-  const onSubmit = (data: CareerFormInputs) => {
-    console.log('Form submitted:', data);
-    setShowToast(true);
-    reset();
-    setCvFileName('');
+  // Fetch homepage content for contact info
+  useEffect(() => {
+    const fetchHomepageContent = async () => {
+      try {
+        const content = await homepageService.get();
+        setHomepageContent(content);
+      } catch (error) {
+        console.error('Error fetching homepage content:', error);
+        // Fallback to hardcoded values if fetch fails
+        setHomepageContent({
+          heroTitle: '',
+          heroSubtitle: '',
+          aboutDescription: '',
+          phoneNumber: '+91 7634961424',
+          email: 'rakeshrit2015@outlook.com',
+          updatedAt: Timestamp.now()
+        });
+      }
+    };
+
+    fetchHomepageContent();
+  }, []);
+
+  // Helper function to convert file to Base64
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  };
+
+  const onSubmit = async (data: CareerFormInputs) => {
+    setIsSubmitting(true);
+    setSubmitError('');
+    
+    try {
+      let cvData = null;
+      
+      // Convert CV to Base64 if uploaded
+      if (data.cv && data.cv[0]) {
+        const file = data.cv[0];
+        
+        // Check file size (5MB limit)
+        if (file.size > 5 * 1024 * 1024) {
+          throw new Error('CV file size must be less than 5MB');
+        }
+        
+        const base64 = await convertToBase64(file);
+        cvData = {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          data: base64
+        };
+      }
+      
+      await careerService.submit({
+        name: data.name,
+        email: data.email,
+        phone: `+91${data.phone}`, // Add +91 prefix
+        skills: data.skills,
+        experience: data.experience,
+        cv: cvData,
+        coverLetter: data.coverLetter
+      });
+      
+      setShowToast(true);
+      reset();
+      setCvFileName('');
+    } catch (error: any) {
+      console.error('Error submitting career application:', error);
+      setSubmitError(error.message || 'Failed to submit application. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const technologies = [
@@ -609,11 +685,37 @@ const Careers: React.FC = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Phone *
                       </label>
-                      <input
-                        {...register('phone', { required: 'Phone is required' })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="+91 XXXXX XXXXX"
-                      />
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600 font-medium">
+                          +91
+                        </span>
+                        <input
+                          type="tel"
+                          {...register('phone', { 
+                            required: 'Phone number is required',
+                            pattern: {
+                              value: /^[6-9]\d{9}$/,
+                              message: 'Please enter a valid 10-digit Indian mobile number'
+                            },
+                            minLength: {
+                              value: 10,
+                              message: 'Phone number must be 10 digits'
+                            },
+                            maxLength: {
+                              value: 10,
+                              message: 'Phone number must be 10 digits'
+                            }
+                          })}
+                          className="w-full pl-12 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="9876543210"
+                          maxLength={10}
+                          onInput={(e) => {
+                            // Only allow digits and limit to 10 characters
+                            const target = e.target as HTMLInputElement;
+                            target.value = target.value.replace(/[^0-9]/g, '').slice(0, 10);
+                          }}
+                        />
+                      </div>
                       {errors.phone && (
                         <span className="text-red-500 text-sm mt-1">{errors.phone.message}</span>
                       )}
@@ -670,9 +772,15 @@ const Careers: React.FC = () => {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                       {cvFileName && (
-                        <span className="text-sm text-gray-500 mt-1">Selected: {cvFileName}</span>
+                        <span className="text-sm text-green-600 mt-1 flex items-center">
+                          <CheckCircle className="h-4 w-4 mr-1" />
+                          Selected: {cvFileName}
+                        </span>
                       )}
                     </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Supported formats: PDF, DOC, DOCX (Max size: 5MB)
+                    </p>
                     {errors.cv && (
                       <span className="text-red-500 text-sm mt-1">{errors.cv.message}</span>
                     )}
@@ -695,15 +803,32 @@ const Careers: React.FC = () => {
 
                   <button 
                     type="submit" 
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg text-lg font-semibold transition-colors"
+                    disabled={isSubmitting}
+                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-3 rounded-lg text-lg font-semibold transition-colors flex items-center justify-center gap-2"
                   >
-                    Apply Now
+                    {isSubmitting ? (
+                      <>
+                        <motion.div
+                          className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        />
+                        Submitting...
+                      </>
+                    ) : (
+                      'Apply Now'
+                    )}
                   </button>
-                  
-                  {isSubmitSuccessful && (
-                    <p className="text-green-600 text-center mt-4">
-                      Application submitted successfully!
-                    </p>
+
+                  {/* Error message */}
+                  {submitError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-4 p-3 bg-red-100 border border-red-300 rounded-lg"
+                    >
+                      <p className="text-red-700 text-sm">{submitError}</p>
+                    </motion.div>
                   )}
                 </form>
               </div>
@@ -717,23 +842,28 @@ const Careers: React.FC = () => {
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <Mail className="h-5 w-5 text-blue-600" />
-                    <span className="text-gray-700">rakeshrit2015@outlook.com</span>
+                    <span className="text-gray-700">
+                      {homepageContent?.email || 'rakeshrit2015@outlook.com'}
+                    </span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Phone className="h-5 w-5 text-blue-600" />
-                    <span className="text-gray-700">+91 7634961424</span>
+                    <span className="text-gray-700">
+                      {homepageContent?.phoneNumber || '+91 7634961424'}
+                    </span>
                   </div>
                 </div>
                 
                 <div className="mt-6">
                   <h4 className="font-medium text-gray-900 mb-3">Connect</h4>
-                  <a 
-                    href="#" 
+                  <button
+                    type="button"
                     className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700"
+                    aria-label="LinkedIn Profile (not a real link)"
                   >
                     <Linkedin className="h-5 w-5" />
                     <span>LinkedIn Profile</span>
-                  </a>
+                  </button>
                 </div>
               </div>
 

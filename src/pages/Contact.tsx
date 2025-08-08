@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Mail, 
   Phone, 
-  MapPin, 
   Send, 
   User, 
   MessageSquare, 
   Building, 
   ArrowRight,
-  CheckCircle,
-  Upload
+  CheckCircle
 } from 'lucide-react';
+import { contactService, homepageService, HomepageContent } from '../services/firebaseService';
+import { Timestamp } from 'firebase/firestore';
+import emailjs from '@emailjs/browser';
+import { emailConfig } from '../config/emailConfig';
 
 // Animated Background Component
 function AnimatedBackground() {
@@ -99,40 +101,141 @@ function AnimatedBackground() {
   );
 }
 
-const contactMethods = [
-  {
-    icon: Mail,
-    title: "Email Us",
-    description: "Get in touch via email",
-    value: "rakeshrit2015@outlook.com",
-    link: "mailto:rakeshrit2015@outlook.com",
-    gradient: "from-indigo-500/20 to-blue-500/20",
-    hoverColor: "indigo"
-  },
-  {
-    icon: Phone,
-    title: "Call Us",
-    description: "Speak directly with our team",
-    value: "+91 7634961424",
-    link: "tel:+917634961424",
-    gradient: "from-indigo-500/20 to-blue-500/20",
-    hoverColor: "indigo"
-  } 
-];
-
 const Contact: React.FC = () => {
+  // Email notification function
+  const sendEmailNotification = async (data: {
+    name: string;
+    email: string;
+    company: string;
+    message: string;
+  }) => {
+    try {
+      console.log('Preparing to send email notification');
+      
+      // Format current date and time
+      const currentTime = new Date().toLocaleString('en-US', {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true
+      });
+      
+      // Create a clean object with just the variables needed for the template
+      const templateParams = {
+        // Primary variables that match the template exactly
+        name: data.name,
+        email: data.email,
+        company: data.company || 'Not provided',
+        message: data.message,
+        time: currentTime,
+        
+        // Email.js required fields
+        to_name: 'Admin',
+        reply_to: data.email,
+        subject: `[WEBSITE INQUIRY] ${data.name} wants to connect with you`,
+        
+        // Fallback variables with different names (for compatibility)
+        from_name: data.name,
+        from_email: data.email
+      };
+
+      console.log('Using EmailJS config:', {
+        serviceId: emailConfig.serviceId,
+        templateId: emailConfig.templateId,
+        publicKeyExists: !!emailConfig.publicKey
+      });
+
+      // Check if the required configuration is available
+      if (!emailConfig.serviceId || !emailConfig.templateId || !emailConfig.publicKey) {
+        console.warn('EmailJS configuration is incomplete - email will not be sent');
+        return null;
+      }
+
+      const response = await emailjs.send(
+        emailConfig.serviceId,
+        emailConfig.templateId,
+        templateParams,
+        emailConfig.publicKey
+      );
+      
+      console.log('Email notification sent successfully:', response);
+      return response;
+    } catch (error) {
+      console.error('Error sending email notification:', error);
+      // Don't throw the error - we don't want to block the form submission
+      // if email fails, as the data is still saved to Firebase
+      return null;
+    }
+  };
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     company: '',
-    message: '',
-    resume: null as File | null
+    message: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string>('');
+  const [homepageContent, setHomepageContent] = useState<HomepageContent | null>(null);
 
-  const handleInputChange = (field: string, value: string | File | null) => {
+  // Initialize EmailJS
+  useEffect(() => {
+    // Initialize EmailJS with your public key
+    try {
+      emailjs.init(emailConfig.publicKey);
+      console.log('EmailJS initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize EmailJS:', error);
+    }
+  }, []);
+
+  // Fetch homepage content for contact info
+  useEffect(() => {
+    const fetchHomepageContent = async () => {
+      try {
+        const content = await homepageService.get();
+        setHomepageContent(content);
+      } catch (error) {
+        console.error('Error fetching homepage content:', error);
+        // Fallback to hardcoded values if fetch fails
+        setHomepageContent({
+          heroTitle: '',
+          heroSubtitle: '',
+          aboutDescription: '',
+          phoneNumber: '+91 7634961424',
+          email: 'rakeshrit2015@outlook.com',
+          updatedAt: Timestamp.now()
+        });
+      }
+    };
+
+    fetchHomepageContent();
+  }, []);
+
+  // Create contact methods dynamically based on fetched data
+  const contactMethods = homepageContent ? [
+    {
+      icon: Mail,
+      title: "Email Us",
+      description: "Get in touch via email",
+      value: homepageContent.email || 'rakeshrit2015@outlook.com',
+      link: `mailto:${homepageContent.email || 'rakeshrit2015@outlook.com'}`,
+      gradient: "from-indigo-500/20 to-blue-500/20",
+      hoverColor: "indigo"
+    },
+    {
+      icon: Phone,
+      title: "Call Us",
+      description: "Speak directly with our team",
+      value: homepageContent.phoneNumber || '+91 7634961424',
+      link: `tel:${(homepageContent.phoneNumber || '+91 7634961424').replace(/\s+/g, '')}`,
+      gradient: "from-indigo-500/20 to-blue-500/20",
+      hoverColor: "indigo"
+    } 
+  ] : [];
+
+  const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -167,10 +270,39 @@ const Contact: React.FC = () => {
     if (!validateForm()) return;
     
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+    setSubmitError('');
+    
+    try {
+      // First submit to Firebase (existing logic)
+      await contactService.submit({
+        name: formData.name,
+        email: formData.email,
+        company: formData.company,
+        message: formData.message
+      });
+      
+      // Then send email notification to admin
+      await sendEmailNotification({
+        name: formData.name,
+        email: formData.email,
+        company: formData.company || 'Not specified',
+        message: formData.message
+      });
+      
+      setIsSubmitted(true);
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        company: '',
+        message: ''
+      });
+    } catch (error: any) {
+      console.error('Error submitting form:', error);
+      setSubmitError(error.message || 'Failed to submit form. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const fadeInUp = {
@@ -274,23 +406,6 @@ const Contact: React.FC = () => {
                     )}
                   </div>
 
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Resume/CV (Optional)</label>
-                    <div className="relative border border-gray-200 rounded-lg bg-gray-50 px-6 py-4">
-                      <input
-                        type="file"
-                        onChange={(e) => handleInputChange('resume', e.target.files?.[0] || null)}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        accept=".pdf,.doc,.docx"
-                      />
-                      <div className="flex items-center gap-3 text-gray-500">
-                        <Upload className="h-5 w-5" />
-                        <span>{formData.resume ? formData.resume.name : 'Upload your resume'}</span>
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-500 mt-1">Accepted formats: PDF, DOC, DOCX</p>
-                  </div>
-
                   <motion.button
                     type="submit"
                     disabled={isSubmitting}
@@ -311,6 +426,17 @@ const Contact: React.FC = () => {
                       </>
                     )}
                   </motion.button>
+
+                  {/* Error message */}
+                  {submitError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-4 p-3 bg-red-100 border border-red-300 rounded-lg"
+                    >
+                      <p className="text-red-700 text-sm">{submitError}</p>
+                    </motion.div>
+                  )}
                 </motion.form>
               ) : (
                 <motion.div
@@ -334,7 +460,7 @@ const Contact: React.FC = () => {
                   <motion.button
                     onClick={() => {
                       setIsSubmitted(false);
-                      setFormData({ name: '', email: '', company: '', message: '', resume: null });
+                      setFormData({ name: '', email: '', company: '', message: '' });
                     }}
                     className="px-6 py-3 bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200 transition-all"
                     whileHover={{ scale: 1.05 }}
@@ -349,7 +475,7 @@ const Contact: React.FC = () => {
 
           {/* Contact Methods */}
           <motion.div variants={fadeInUp} className="space-y-6">
-            {contactMethods.map((method, index) => (
+            {contactMethods.length > 0 ? contactMethods.map((method, index) => (
               <motion.a
                 key={index}
                 href={method.link}
@@ -371,7 +497,12 @@ const Contact: React.FC = () => {
                   <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" />
                 </div>
               </motion.a>
-            ))}
+            )) : (
+              <div className="animate-pulse space-y-4">
+                <div className="bg-gray-200 h-20 rounded-lg"></div>
+                <div className="bg-gray-200 h-20 rounded-lg"></div>
+              </div>
+            )}
 
             <motion.div
               className="p-6 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg border border-indigo-100"
