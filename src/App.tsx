@@ -4,6 +4,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ui/ScrollToTop';
+import ScrollToTopOnRoute from './components/ui/ScrollToTopOnRoute';
 import Home from './pages/Home';
 import About from './pages/About';
 import Services from './pages/Services';
@@ -19,8 +21,10 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <ScrollToTopOnRoute />
         <div className="App min-h-screen bg-gray-50">
           <Navbar />
+          <ScrollToTop />
           <main className="flex-1">
             <Routes>
               <Route path="/" element={<Home />} />
