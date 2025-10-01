@@ -15,6 +15,8 @@ import Careers from './pages/Careers';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import NotFound from './pages/NotFound';
+import SapBtp from './pages/SapBtp';
+
 import './App.css';
 
 function App() {
@@ -34,6 +36,7 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/careers" element={<Careers />} />
               <Route path="/admin" element={<AdminLogin />} />
+              <Route path="/sapbtp" element={<SapBtp />} />
               <Route 
                 path="/admin/dashboard" 
                 element={
