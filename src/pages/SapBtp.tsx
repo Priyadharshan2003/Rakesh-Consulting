@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Database, Code, GitMerge, Bot, BrainCircuit } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Database, Code, GitMerge, Bot, BrainCircuit, Settings2 } from 'lucide-react';
 
 // Carousel slides data
 const carouselSlides: {
@@ -157,6 +157,12 @@ const pillars: { title: string; description: string; icon: React.ElementType }[]
     title: "Artificial Intelligence",
     description: "Embedded AI, like SAP Conversational AI, enables intelligent processes and self-learning apps for smarter business outcomes.",
     icon: BrainCircuit
+  }
+  ,
+  {
+    title: "Intelligent RPA (IRPA)",
+    description: "Leverage SAP Intelligent Robotic Process Automation to automate complex, repetitive business processes and boost productivity across your enterprise.",
+    icon: Settings2
   }
 ];
 
